@@ -1,0 +1,44 @@
+name: Desplegar el proxy de IA (Cloudflare)
+
+# Despliega el proxy cada vez que cambie algo dentro de proxy/.
+# Antes de nada necesita DOS secretos en el repositorio
+# (Settings -> Secrets and variables -> Actions -> New repository secret):
+#   CLOUDFLARE_API_TOKEN   token de Cloudflare con permiso «Workers Scripts: Edit»
+#   CLOUDFLARE_ACCOUNT_ID  el identificador de tu cuenta (lo muestra `npx wrangler whoami`)
+# La clave de Ollama NO se pasa por aquí: vive como secreto dentro de Cloudflare.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'proxy/**'
+      - '.github/workflows/desplegar-proxy.yml'
+  workflow_dispatch:
+
+jobs:
+  desplegar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Comprobar que están los secretos de Cloudflare
+        run: |
+          if [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ]; then
+            echo "Falta el secreto CLOUDFLARE_API_TOKEN (Settings -> Secrets and variables -> Actions)."
+            exit 1
+          fi
+          if [ -z "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ]; then
+            echo "Falta el secreto CLOUDFLARE_ACCOUNT_ID."
+            exit 1
+          fi
+
+      - name: Comprobar el proxy (sin red, sin desplegar)
+        run: node proxy/probar.js --sin-red
+
+      - name: Desplegar en Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: proxy
+          command: deploy
