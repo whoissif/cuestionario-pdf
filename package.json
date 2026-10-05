@@ -14,7 +14,10 @@
     "extraccion": "node scripts/probar-extraccion.js",
     "verificar-docx": "node scripts/verificar-docx.cjs",
     "ia-falsa": "node scripts/servidor-ia-falso.cjs",
-    "pdf-ejemplo": "node scripts/make-sample-pdf.cjs"
+    "pdf-ejemplo": "node scripts/make-sample-pdf.cjs",
+    "proxy": "node proxy/servidor-node.js",
+    "proxy:empaquetar": "node proxy/empaquetar.js",
+    "proxy:probar": "node proxy/probar.js"
   },
   "keywords": [
     "cuestionario",

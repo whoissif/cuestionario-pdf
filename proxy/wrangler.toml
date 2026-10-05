@@ -1,0 +1,16 @@
+# Configuración del proxy para Cloudflare Workers.
+# Despliegue:  cd proxy  &&  npx wrangler deploy
+#
+# La clave NO va aquí: se guarda como secreto con
+#   npx wrangler secret put OLLAMA_API_KEY
+# (o en el panel: Workers -> tu Worker -> Settings -> Variables -> Secret).
+
+name = "cuestionario-proxy-ollama"
+main = "trabajador.js"
+compatibility_date = "2025-01-01"
+workers_dev = true
+
+[vars]
+# Páginas autorizadas a usar el proxy (separadas por comas).
+# Si pones "*" cualquiera podría gastar tu cuota: no lo hagas.
+ORIGENES = "https://whoissif.github.io,http://localhost:3000,http://127.0.0.1:3000"

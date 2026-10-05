@@ -238,6 +238,24 @@ El cliente ordena la lista poniendo primero los servicios **sin clave**, y dentr
 **LLM7.io antes que OVHcloud** por un motivo práctico: LLM7.io admite unas 30 peticiones por
 minuto y OVHcloud solo 2.
 
+### Aviso verificado sobre Ollama Cloud (y sobre qué servicios admiten navegador)
+
+Medido con peticiones reales a los servicios, no supuesto:
+
+| Servicio | `Access-Control-Allow-Origin` | Preflight `OPTIONS` |
+|----------|-------------------------------|---------------------|
+| OVHcloud, LLM7.io, Groq, Mistral, Cerebras, OpenRouter | `*` | Aceptado |
+| Google Gemini | devuelve el origen exacto | Aceptado |
+| **Ollama Cloud** (`api.ollama.com` y `ollama.com`, rutas `/api` y `/v1`) | **ninguna cabecera** | **405** |
+
+El host de Ollama Cloud es correcto y el servicio está vivo (responde 200 a `/api/tags` y 401 a un
+`POST /api/chat` sin clave), pero **un navegador no puede llamarlo nunca**: el preflight se rechaza
+y la petición real no llega a salir, así que la clave ni se usa. Por eso la entrada «Ollama Cloud»
+del catálogo **solo sirve detrás de un intermediario**. La carpeta `proxy/` contiene ese
+intermediario: un núcleo compartido (`nucleo.js`), dos adaptadores (Cloudflare Workers y
+Node/Codespaces) y **38 comprobaciones** que incluyen llamadas reales a Ollama Cloud. Se configura
+en la app con la entrada genérica «Otro servidor Ollama», sin tocar código.
+
 ### Cómo se prepara el material y se reparten las preguntas
 1. `materialDeTexto(texto, paginas)` reutiliza el analizador del motor local (`parsearBloques`,
    importado de `nucleo/generador.js`) y escribe el texto con estructura: `## título`, `- viñeta` y

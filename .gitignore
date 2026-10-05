@@ -14,7 +14,8 @@ salida-servidor.txt
 error-servidor.txt
 *.tmp
 
-# Variables de entorno (la clave de API vive en el navegador, nunca aquí)
+# Variables de entorno. La clave de la IA vive en el navegador o, si usas el
+# proxy (carpeta proxy/), en un secreto del servicio: nunca en el repositorio.
 .env
 .env.*
 

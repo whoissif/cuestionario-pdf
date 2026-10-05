@@ -73,7 +73,7 @@ En la tarjeta *3 · O genera con IA*:
 | **OpenRouter** | Sí | Modelos con sufijo `:free` |
 | **Cerebras** | Sí | Hasta 1 millón de tokens al día |
 | **Mistral AI** | Sí | Plan «Experiment» |
-| **Ollama Cloud** | Sí | Nivel gratuito con límites de uso |
+| **Ollama Cloud** | Sí | Nivel gratuito con límites de uso, pero ⚠️ **solo funciona con el [proxy](proxy/README.md)** |
 
 > **Privacidad:** con Ollama en tu PC, el PDF **no sale de tu ordenador**. Con los servicios en la
 > nube, el texto del PDF se envía a ese servicio (es lo que hace la IA); la aplicación te lo
@@ -83,6 +83,13 @@ En la tarjeta *3 · O genera con IA*:
 > rechazar la petición por CORS. Ollama en tu PC funciona siempre. Si la IA falla, la aplicación te
 > explica el motivo y **genera el cuestionario con el motor local**, para que nunca te quedes sin
 > preguntas.
+>
+> **Ollama Cloud es un caso aparte:** comprobado con peticiones reales, su API **no envía ninguna
+> cabecera CORS** y rechaza el preflight con un **405**, así que un navegador **no puede llamarla
+> nunca**, ni con la clave correcta. No es un fallo de la clave. Para usarla desde la web hace falta
+> un intermediario: la carpeta [`proxy/`](proxy/README.md) trae uno listo (gratis, en Cloudflare
+> Workers o en un Codespace) y la aplicación ya sabe hablar con él sin tocar código, usando la
+> entrada «Otro servidor Ollama».
 
 #### Instalar Ollama (IA gratis y local, sin claves)
 
