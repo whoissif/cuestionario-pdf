@@ -1,0 +1,48 @@
+{
+  "name": "cuestionario-pdf",
+  "version": "3.0.0",
+  "description": "Web app que convierte un PDF en un cuestionario de 4 opciones por pregunta y lo descarga en Word. Funciona entera dentro del navegador, sin servidor.",
+  "main": "servidor/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node servidor/index.js",
+    "start": "node servidor/index.js",
+    "build": "node scripts/construir-web.js",
+    "construir-web": "node scripts/construir-web.js",
+    "generar": "node scripts/probar-generador.js",
+    "texto": "node scripts/volcar-texto.js",
+    "extraccion": "node scripts/probar-extraccion.js",
+    "verificar-docx": "node scripts/verificar-docx.cjs",
+    "ia-falsa": "node scripts/servidor-ia-falso.cjs",
+    "pdf-ejemplo": "node scripts/make-sample-pdf.cjs"
+  },
+  "keywords": [
+    "cuestionario",
+    "preguntas",
+    "pdf",
+    "docx",
+    "word",
+    "github-pages",
+    "sin-servidor",
+    "sin-base-de-datos",
+    "ia",
+    "ollama"
+  ],
+  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/whoissif/cuestionario-pdf.git"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "dependencies": {
+    "docx": "^9.8.1",
+    "express": "^5.2.1",
+    "material-design-lite": "^1.3.0",
+    "pdfjs-dist": "^6.4.299"
+  },
+  "devDependencies": {
+    "pdf-lib": "^1.17.1"
+  }
+}

@@ -1,0 +1,24 @@
+# OJO: la carpeta docs/ SÍ se publica (es el sitio que sirve GitHub Pages).
+# No la añadas aquí.
+
+# Dependencias (se instalan con: npm install)
+node_modules/
+.npm-cache/
+
+# PDFs que sube el usuario: son temporales y nunca deben publicarse
+backend/uploads/
+
+# Archivos de registro y temporales
+*.log
+salida-servidor.txt
+error-servidor.txt
+*.tmp
+
+# Variables de entorno (la clave de API vive en el navegador, nunca aquí)
+.env
+.env.*
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini

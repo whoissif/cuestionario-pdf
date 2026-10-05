@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CUESTIONARIO · a partir de un PDF</title>
+    <meta
+      name="description"
+      content="Sube un PDF y obtén un cuestionario de 4 opciones por pregunta, listo para descargar en Word."
+    />
+    <!-- Rutas RELATIVAS a propósito: así la aplicación funciona igual en la
+         raíz del sitio (servidor local) que dentro de una subcarpeta
+         (https://usuario.github.io/cuestionario-pdf/). -->
+    <link rel="stylesheet" href="vendor/mdl/material.min.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <!-- El JavaScript de MDL es necesario para las etiquetas flotantes de los
+         campos de texto (añade las clases is-dirty / is-focused). -->
+    <script defer src="vendor/mdl/material.min.js"></script>
+    <!-- Librería `docx` para generar los .docx dentro del navegador: crea el
+         global `window.docx` (se comprobó que funciona sin Buffer ni process). -->
+    <script defer src="vendor/docx/index.iife.js"></script>
+  </head>
+  <body>
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+      <header class="mdl-layout__header app-header">
+        <div class="mdl-layout__header-row">
+          <span class="mdl-layout-title app-title">CUESTIONARIO</span>
+          <div class="mdl-layout-spacer"></div>
+          <span class="app-subtitle">Cuestionarios de 4 opciones a partir de un PDF</span>
+        </div>
+      </header>
+
+      <main class="mdl-layout__content">
+        <div class="page-content">
+          <h2 class="section-title">Crear un cuestionario</h2>
+
+          <div class="mdl-card mdl-shadow--2dp card">
+            <div class="mdl-card__title">
+              <h3 class="mdl-card__title-text">1 · Elige el documento PDF</h3>
+            </div>
+            <div class="mdl-card__supporting-text">
+              <p class="hint">
+                Un único archivo PDF por cuestionario · máximo 10 MB.
+                <strong>No se sube a ningún sitio:</strong> se lee dentro de tu navegador.
+              </p>
+
+              <input type="file" id="pdf-input" accept="application/pdf,.pdf" class="file-input" />
+              <button id="btn-upload" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">
+                Leer el PDF
+              </button>
+
+              <p id="upload-status" class="status" role="status"></p>
+              <p id="pdf-info" class="pdf-info"></p>
+            </div>
+          </div>
+
+          <div class="mdl-card mdl-shadow--2dp card">
+            <div class="mdl-card__title">
+              <h3 class="mdl-card__title-text">2 · Genera las preguntas del documento</h3>
+            </div>
+            <div class="mdl-card__supporting-text">
+              <p class="hint">
+                La aplicación lee el PDF y redacta sola las preguntas con sus 4 opciones.
+                Después podrás revisarlas y corregirlas antes de descargarlas.
+              </p>
+
+              <div class="gen-row">
+                <label class="gen-label" for="gen-count">Número de preguntas</label>
+                <input
+                  type="number"
+                  id="gen-count"
+                  class="gen-input"
+                  min="1"
+                  max="50"
+                  step="1"
+                  value="10"
+                />
+                <button
+                  id="btn-generate"
+                  class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
+                >
+                  Generar preguntas
+                </button>
+              </div>
+
+              <p id="gen-status" class="status" role="status"></p>
+            </div>
+          </div>
+
+          <div class="mdl-card mdl-shadow--2dp card">
+            <div class="mdl-card__title">
+              <h3 class="mdl-card__title-text">3 · O genera con IA (opcional)</h3>
+            </div>
+            <div class="mdl-card__supporting-text">
+              <p class="hint">
+                Un modelo de lenguaje redacta preguntas más naturales. Usa el
+                <strong>número de preguntas</strong> que has indicado arriba.
+                <br />
+                Con <strong>Ollama en tu PC</strong> no necesitas clave y tu PDF no sale del
+                ordenador. Con los servicios en la nube, <strong>el texto del PDF se envía</strong>
+                a ese servicio (la mayoría tienen nivel gratuito).
+              </p>
+
+              <div class="ia-grid">
+                <label class="gen-label" for="ia-proveedor">Servicio</label>
+                <select id="ia-proveedor" class="ia-input"></select>
+
+                <label class="gen-label" for="ia-url">URL del servicio</label>
+                <input type="text" id="ia-url" class="ia-input" spellcheck="false" />
+
+                <label class="gen-label" for="ia-modelo">Modelo</label>
+                <div class="ia-fila">
+                  <input
+                    type="text"
+                    id="ia-modelo"
+                    class="ia-input"
+                    list="ia-modelos"
+                    spellcheck="false"
+                    placeholder="Ej.: llama3.2"
+                  />
+                  <datalist id="ia-modelos"></datalist>
+                  <button id="btn-ia-modelos" class="mdl-button mdl-js-button">Ver modelos</button>
+                </div>
+
+                <label class="gen-label" for="ia-clave">Clave de API</label>
+                <div class="ia-fila">
+                  <input
+                    type="password"
+                    id="ia-clave"
+                    class="ia-input"
+                    autocomplete="off"
+                    spellcheck="false"
+                    placeholder="Solo si el servicio la necesita"
+                  />
+                  <button id="btn-ia-olvidar" class="mdl-button mdl-js-button">Borrar clave</button>
+                </div>
+              </div>
+
+              <p id="ia-nota" class="hint"></p>
+
+              <p class="hint">
+                La clave se guarda <strong>solo en este navegador</strong> (en su almacenamiento
+                local). Esta página no tiene servidor, así que no hay nadie más que pueda verla.
+              </p>
+
+              <div class="gen-row">
+                <button id="btn-ia-probar" class="mdl-button mdl-js-button">Probar conexión</button>
+                <button
+                  id="btn-ia-generar"
+                  class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
+                >
+                  Generar con IA
+                </button>
+              </div>
+
+              <p id="ia-status" class="status" role="status"></p>
+            </div>
+          </div>
+
+          <div class="mdl-card mdl-shadow--2dp card">
+            <div class="mdl-card__title">
+              <h3 class="mdl-card__title-text">4 · Título del cuestionario</h3>
+            </div>
+            <div class="mdl-card__supporting-text">
+              <p class="hint">Aparece en la cabecera del examen y da nombre al archivo de Word.</p>
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label full-width">
+                <input class="mdl-textfield__input" type="text" id="quiz-title" />
+                <label class="mdl-textfield__label" for="quiz-title">Ej.: Comprensión del informe</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="mdl-card mdl-shadow--2dp card">
+            <div class="mdl-card__title">
+              <h3 class="mdl-card__title-text">5 · Revisa y edita las preguntas (4 opciones cada una)</h3>
+            </div>
+            <div class="mdl-card__supporting-text">
+              <div id="questions"></div>
+              <button id="btn-add-question" class="mdl-button mdl-js-button mdl-button--raised">
+                Añadir pregunta
+              </button>
+            </div>
+          </div>
+
+          <div class="mdl-card mdl-shadow--2dp card">
+            <div class="mdl-card__title">
+              <h3 class="mdl-card__title-text">6 · Descargar en Word (.docx)</h3>
+            </div>
+            <div class="mdl-card__supporting-text">
+              <p class="hint">
+                Se descargan <strong>dos archivos independientes</strong>: el examen (solo las
+                preguntas, para imprimir) y el solucionario (la tabla de respuestas correctas).
+                Se genera a partir de las preguntas que hay ahora mismo en la pantalla.
+              </p>
+
+              <div class="gen-row">
+                <button
+                  id="btn-docx-examen"
+                  class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
+                >
+                  Descargar examen
+                </button>
+                <button id="btn-docx-soluciones" class="mdl-button mdl-js-button mdl-button--raised">
+                  Descargar soluciones
+                </button>
+              </div>
+
+              <p id="docx-status" class="status" role="status"></p>
+            </div>
+          </div>
+
+          <p class="hint footer-note">
+            Esta aplicación <strong>no guarda nada</strong> y <strong>no tiene servidor</strong>:
+            todo ocurre dentro de tu navegador. El PDF que eliges no se sube a ningún sitio y el
+            cuestionario vive solo en esta pestaña hasta que lo descargas.
+          </p>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
